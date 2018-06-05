@@ -1,0 +1,336 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "VNetName": {
+            "type": "string",
+            "defaultValue": "VirtualNetwork",
+            "metadata": {
+                "description": "Name of the Virtual Network"
+            }
+        },
+        "VNetPrefix":{
+            "type": "string",
+            "defaultValue": "10.0.0.0/21",
+            "metadata": {
+                "description": "This is the address space used to create your VNET"
+            }
+        },
+        "GatewaySubnetPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.0.0/27",
+            "metadata": {
+                "description": "Address space for the Gateway Subnet"
+            }
+        },
+        "AppGatewaySubnetName": {
+            "type": "string",
+            "defaultValue": "AppGateway",
+            "metadata": {
+                "description": "Name for the Application Gateway Subnet"
+            }
+        },
+        "AppGatewaySubnetPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.0.32/27",
+            "metadata": {
+                "description": "Address space for the Application Gateway Subnet"
+            }
+        },
+        "ManagementSubnetName": {
+            "type": "string",
+            "defaultValue": "Management",
+            "metadata": {
+                "description": "Name for the Management Subnet"
+            }
+        },
+        "ManagementSubnetPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.0.64/27",
+            "metadata": {
+                "description": "Address space for the Management Subnet"
+            }
+        },
+        "OutsideSubnetName": {
+            "type": "string",
+            "defaultValue": "Outside",
+            "metadata": {
+                "description": "Name for the Outside/On-Prem Subnet"
+            }
+        },
+        "OutsideSubnetPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.0.96/27",
+            "metadata": {
+                "description": "Address space for the Outside/On-Prem Subnet"
+            }
+        },
+        "PrivateSubnetNameName": {
+            "type": "string",
+            "defaultValue": "Private",
+            "metadata": {
+                "description": "Name for the Private Subnet"
+            }
+        },
+        "PrivateSubnetPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.0.128/27",
+            "metadata": {
+                "description": "Address space for the Private Subnet"
+            }
+        },
+        "PublicSubnetName": {
+            "type": "string",
+            "defaultValue": "Public",
+            "metadata": {
+                "description": "Name for the Public Subnet"
+            }
+        },
+        "PublicSubnetPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.0.160/27",
+            "metadata": {
+                "description": "Address space for the Public Subnet"
+            }
+        },
+        "ADSubnetName": {
+            "type": "string",
+            "defaultValue": "AD",
+            "metadata": {
+                "description": "Name for the AD Subnet"
+            }
+        },
+        "ADSubnetPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.0.192/27",
+            "metadata": {
+                "description": "Address space for the AD Subnet"
+            }
+        },
+        "ADSubnetNSGName": {
+            "type": "string",
+            "defaultValue": "_nsg_ad",
+            "metadata": {
+              "description": "This is the name of the NSG assigned to the AD subnet"
+            }
+        },
+        "ApplicationSubnetName": {
+            "type": "string",
+            "defaultValue": "Apps",
+            "metadata": {
+                "description": "Name for the Application Subnet"
+            }
+        },
+        "ApplicationSubnetPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.1.0/24",
+            "metadata": {
+                "description": "Address space for the Application Subnet"
+            }
+        },
+        "ApplicationSubnetNSGName": {
+            "type": "string",
+            "defaultValue": "_nsg_app",
+            "metadata": {
+              "description": "This is the name of the NSG assigned to the Application subnet"
+            }
+        },
+        "DataSubnetName": {
+            "type": "string",
+            "defaultValue": "Data",
+            "metadata": {
+                "description": "Name for the Data Subnet"
+            }
+        },
+        "DataSubnetPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.2.0/24",
+            "metadata": {
+                "description": "Address space for the Data Subnet"
+            }
+        },
+        "DataSubnetNSGName": {
+            "type": "string",
+            "defaultValue": "_nsg_data",
+            "metadata": {
+              "description": "This is the name of the NSG assigned to the Data subnet"
+            }
+        },
+        "WebSubnetName": {
+            "type": "string",
+            "defaultValue": "Web",
+            "metadata": {
+                "description": "Name for the Web Subnet"
+            }
+        },
+        "WebSubnetPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.3.0/24",
+            "metadata": {
+                "description": "Address space for the Web Subnet"
+            }
+        },
+        "WebSubnetNSGName": {
+            "type": "string",
+            "defaultValue": "_nsg_web",
+            "metadata": {
+              "description": "This is the name of the NSG assigned to the Web subnet"
+            }
+        }
+        
+    },
+    "variables": {
+
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "name": "[parameters('ADSubnetNSGName')]",
+            "tags": {
+              "displayName": "NSG - AD"
+            },
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "name": "[parameters('ApplicationSubnetNSGName')]",
+            "tags": {
+              "displayName": "NSG - App"
+            },
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "name": "[parameters('DataSubnetNSGName')]",
+            "tags": {
+              "displayName": "NSG - Data"
+            },
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2015-06-15",
+            "location": "[resourceGroup().location]",
+            "name": "[parameters('WebSubnetNSGName')]",
+            "tags": {
+              "displayName": "NSG - Web"
+            },
+            "properties": {}
+        },
+        {
+            "name": "[parameters('VNetName')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "location": "[resourceGroup().location]",
+            "apiVersion": "2015-06-15",
+            "dependsOn": [],
+            "tags": {
+                "displayName": "Test"
+            },
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('VNetPrefix')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "GatewaySubnet",
+                        "properties": {
+                            "addressPrefix": "[parameters('GatewaySubnetPrefix')]",
+                            "networkSecurityGroup": {
+                                "id": ""
+                            }
+                        }
+                    },
+                    {
+                        "name": "[parameters('AppGatewaySubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('AppGatewaySubnetPrefix')]",
+                            "networkSecurityGroup": {
+                                "id": ""
+                            }
+                        }
+                    },
+                    {
+                        "name": "[parameters('ManagementSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('ManagementSubnetPrefix')]",
+                            "networkSecurityGroup": {
+                                "id": ""
+                            }
+                        }
+                    },
+                    {
+                        "name": "[parameters('OutsideSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('OutsideSubnetPrefix')]",
+                            "networkSecurityGroup": {
+                                "id": ""
+                            }
+                        }
+                    },
+                    {
+                        "name": "[parameters('PrivateSubnetNameName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('PrivateSubnetPrefix')]",
+                            "networkSecurityGroup": {
+                                "id": ""
+                            }
+                        }
+                    },
+                    {
+                        "name": "[parameters('PublicSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('PublicSubnetPrefix')]",
+                            "networkSecurityGroup": {
+                                "id": ""
+                            }
+                        }
+                    },
+                    {
+                        "name": "[parameters('ADSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('ADSubnetPrefix')]",
+                            "networkSecurityGroup": {
+                                "id": ""
+                            }
+                        }
+                    },
+                    {
+                        "name": "[parameters('ApplicationSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('ApplicationSubnetPrefix')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceID('Microsoft.Network/networkSecurityGroups/',parameters('ApplicationSubnetNSGName'))]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "[parameters('DataSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('DataSubnetPrefix')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceID('Microsoft.Network/networkSecurityGroups/',parameters('DataSubnetNSGName'))]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "[parameters('WebSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('WebSubnetPrefix')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceID('Microsoft.Network/networkSecurityGroups/',parameters('WebSubnetNSGName'))]"
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}
