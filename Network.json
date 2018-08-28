@@ -2,267 +2,1811 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "VNetName": {
+        "ProdVNetName": {
             "type": "string",
-            "defaultValue": "VirtualNetwork",
+            "defaultValue": "PrdVirtualNetwork",
             "metadata": {
-                "description": "Name of the Virtual Network"
+                "description": "Name of the Production Virtual Network"
             }
         },
-        "VNetPrefix":{
+        "ProdVNetPrefix":{
             "type": "string",
             "defaultValue": "10.0.0.0/21",
             "metadata": {
-                "description": "This is the address space used to create your VNET"
+                "description": "This is the address space used to create the Production VNET"
+            }
+        },
+        "deploydev": {
+            "type": "string",
+            "defaultValue": "Yes",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "metadata": {
+              "description": "Enables deployment of Development Environment"
+            }
+        },
+        "DevVNetName": {
+            "type": "string",
+            "defaultValue": "DevVirtualNetwork",
+            "metadata": {
+                "description": "Name of the Production Virtual Network"
+            }
+        },
+        "DevVNetPrefix":{
+            "type": "string",
+            "defaultValue": "10.0.8.0/21",
+            "metadata": {
+                "description": "This is the address space used to create the Development VNET"
+            }
+        },
+        "DevSubscriptionId": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Subscription ID in the format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+            }
+        },
+        "DevResourceGroup": {
+            "type": "string",
+            "defaultValue": "dev_netw_rg",
+            "metadata": {
+                "description": "Resource Group for Development subscription Network Infrastructure"
+            }
+        },
+        "VNetGatewayName": {
+            "type": "string",
+            "defaultValue": "VirtualNetworkGateway",
+            "metadata": {
+                "description": "Name of the Virtual Network Gateway"
+            }
+        },
+        "LocalNetworkGatewayName": {
+            "type": "string",
+            "defaultValue": "LocalNetworkGateway",
+            "metadata": {
+                "description": "Name of the Local Network Gateway"
+            }
+        },
+        "LocalNetworkGatewayIP": {
+            "type": "string",
+            "defaultValue": "0.0.0.0",
+            "metadata": {
+                "description": "IP of the VPN Peer that the Local Network Gateway will connect to"
             }
         },
         "GatewaySubnetPrefix": {
             "type": "string",
             "defaultValue": "10.0.0.0/27",
             "metadata": {
-                "description": "Address space for the Gateway Subnet"
+                "description": "Address space for the Production Subscription Gateway Subnet"
+            }
+        },
+        "GatewayRouteTableName": {
+            "type": "string",
+            "defaultValue": "prd_rt_gateway",
+            "metadata": {
+                "description": "Name for the Production Subscription Gateway Subnet's Route Table"
             }
         },
         "AppGatewaySubnetName": {
             "type": "string",
             "defaultValue": "AppGateway",
             "metadata": {
-                "description": "Name for the Application Gateway Subnet"
+                "description": "Name for the Production Subscription Application Gateway Subnet"
             }
         },
         "AppGatewaySubnetPrefix": {
             "type": "string",
             "defaultValue": "10.0.0.32/27",
             "metadata": {
-                "description": "Address space for the Application Gateway Subnet"
+                "description": "Address space for the Production Subscription Application Gateway Subnet"
+            }
+        },
+        "AppGatewayRouteTableName": {
+            "type": "string",
+            "defaultValue": "prd_rt_appgateway",
+            "metadata": {
+                "description": "Name for the Production Subscription AppGateway Subnet's Route Table"
             }
         },
         "ManagementSubnetName": {
             "type": "string",
             "defaultValue": "Management",
             "metadata": {
-                "description": "Name for the Management Subnet"
+                "description": "Name for the Production Subscription Management Subnet"
             }
         },
         "ManagementSubnetPrefix": {
             "type": "string",
             "defaultValue": "10.0.0.64/27",
             "metadata": {
-                "description": "Address space for the Management Subnet"
+                "description": "Address space for the Production Subscription Management Subnet"
+            }
+        },
+        "ManagementRouteTableName": {
+            "type": "string",
+            "defaultValue": "prd_rt_management",
+            "metadata": {
+                "description": "Name for the Production Subscription Management Subnet's Route Table"
             }
         },
         "OutsideSubnetName": {
             "type": "string",
             "defaultValue": "Outside",
             "metadata": {
-                "description": "Name for the Outside/On-Prem Subnet"
+                "description": "Name for the Production Subscription Outside/On-Prem Subnet"
             }
         },
         "OutsideSubnetPrefix": {
             "type": "string",
             "defaultValue": "10.0.0.96/27",
             "metadata": {
-                "description": "Address space for the Outside/On-Prem Subnet"
+                "description": "Address space for the Production Subscription Outside/On-Prem Subnet"
             }
         },
         "PrivateSubnetNameName": {
             "type": "string",
             "defaultValue": "Private",
             "metadata": {
-                "description": "Name for the Private Subnet"
+                "description": "Name for the Production Subscription Private Subnet"
             }
         },
         "PrivateSubnetPrefix": {
             "type": "string",
             "defaultValue": "10.0.0.128/27",
             "metadata": {
-                "description": "Address space for the Private Subnet"
+                "description": "Address space for the Production Subscription Private Subnet"
             }
         },
         "PublicSubnetName": {
             "type": "string",
             "defaultValue": "Public",
             "metadata": {
-                "description": "Name for the Public Subnet"
+                "description": "Name for the Production Subscription Public Subnet"
             }
         },
         "PublicSubnetPrefix": {
             "type": "string",
             "defaultValue": "10.0.0.160/27",
             "metadata": {
-                "description": "Address space for the Public Subnet"
+                "description": "Address space for the Production Subscription Public Subnet"
             }
         },
         "ADSubnetName": {
             "type": "string",
             "defaultValue": "AD",
             "metadata": {
-                "description": "Name for the AD Subnet"
+                "description": "Name for the Production Subscription AD Subnet"
             }
         },
         "ADSubnetPrefix": {
             "type": "string",
             "defaultValue": "10.0.0.192/27",
             "metadata": {
-                "description": "Address space for the AD Subnet"
+                "description": "Address space for the Production Subscription AD Subnet"
             }
         },
-        "ADSubnetNSGName": {
+        "ADRouteTableName": {
             "type": "string",
-            "defaultValue": "_nsg_ad",
+            "defaultValue": "prd_rt_ad",
             "metadata": {
-              "description": "This is the name of the NSG assigned to the AD subnet"
+                "description": "Name for the Production Subscription AD Subnet's Route Table"
             }
         },
-        "ApplicationSubnetName": {
+        "PrdApplicationSubnetName": {
             "type": "string",
             "defaultValue": "Apps",
             "metadata": {
-                "description": "Name for the Application Subnet"
+                "description": "Name for the Production Subscription Application Subnet"
             }
         },
-        "ApplicationSubnetPrefix": {
+        "PrdApplicationSubnetPrefix": {
             "type": "string",
             "defaultValue": "10.0.1.0/24",
             "metadata": {
-                "description": "Address space for the Application Subnet"
+                "description": "Address space for the Production Subscription Application Subnet"
             }
         },
-        "ApplicationSubnetNSGName": {
+        "PrdApplicationRouteTableName": {
             "type": "string",
-            "defaultValue": "_nsg_app",
+            "defaultValue": "prd_rt_apps",
             "metadata": {
-              "description": "This is the name of the NSG assigned to the Application subnet"
+                "description": "Name for the Production Subscription Apps Subnet's Route Table"
             }
         },
-        "DataSubnetName": {
+        "PrdDataSubnetName": {
             "type": "string",
             "defaultValue": "Data",
             "metadata": {
-                "description": "Name for the Data Subnet"
+                "description": "Name for the Production Subscription Data Subnet"
             }
         },
-        "DataSubnetPrefix": {
+        "PrdDataSubnetPrefix": {
             "type": "string",
             "defaultValue": "10.0.2.0/24",
             "metadata": {
-                "description": "Address space for the Data Subnet"
+                "description": "Address space for the Production Subscription Data Subnet"
             }
         },
-        "DataSubnetNSGName": {
+        "PrdDataRouteTableName": {
             "type": "string",
-            "defaultValue": "_nsg_data",
+            "defaultValue": "prd_rt_data",
             "metadata": {
-              "description": "This is the name of the NSG assigned to the Data subnet"
+                "description": "Name for the Production Subscription Data Subnet's Route Table"
             }
         },
-        "WebSubnetName": {
+        "PrdWebSubnetName": {
             "type": "string",
             "defaultValue": "Web",
             "metadata": {
-                "description": "Name for the Web Subnet"
+                "description": "Name for the Production Subscription Web Subnet"
             }
         },
-        "WebSubnetPrefix": {
+        "PrdWebSubnetPrefix": {
             "type": "string",
             "defaultValue": "10.0.3.0/24",
             "metadata": {
-                "description": "Address space for the Web Subnet"
+                "description": "Address space for the Production Subscription Web Subnet"
             }
         },
-        "WebSubnetNSGName": {
+        "PrdWebRouteTableName": {
             "type": "string",
-            "defaultValue": "_nsg_web",
+            "defaultValue": "prd_rt_web",
             "metadata": {
-              "description": "This is the name of the NSG assigned to the Web subnet"
+                "description": "Name for the Production Subscription Web Subnet's Route Table"
+            }
+        },
+        "DevApplicationSubnetName": {
+            "type": "string",
+            "defaultValue": "Apps",
+            "metadata": {
+                "description": "Name for the Development Subscription Application Subnet"
+            }
+        },
+        "DevApplicationSubnetPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.9.0/24",
+            "metadata": {
+                "description": "Address space for the Development Subscription Application Subnet"
+            }
+        },
+        "DevApplicationRouteTableName": {
+            "type": "string",
+            "defaultValue": "dev_rt_apps",
+            "metadata": {
+                "description": "Name for the Development Subscription Apps Subnet's Route Table"
+            }
+        },
+        "DevDataSubnetName": {
+            "type": "string",
+            "defaultValue": "Data",
+            "metadata": {
+                "description": "Name for the Development Subscription Data Subnet"
+            }
+        },
+        "DevDataSubnetPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.10.0/24",
+            "metadata": {
+                "description": "Address space for the Development Subscription Data Subnet"
+            }
+        },
+        "DevDataRouteTableName": {
+            "type": "string",
+            "defaultValue": "dev_rt_data",
+            "metadata": {
+                "description": "Name for the Development Subscription Data Subnet's Route Table"
+            }
+        },
+        "DevWebSubnetName": {
+            "type": "string",
+            "defaultValue": "Web",
+            "metadata": {
+                "description": "Name for the Development Subscription Web Subnet"
+            }
+        },
+        "DevWebSubnetPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.11.0/24",
+            "metadata": {
+                "description": "Address space for the Development Subscription Web Subnet"
+            }
+        },
+        "DevWebRouteTableName": {
+            "type": "string",
+            "defaultValue": "dev_rt_web",
+            "metadata": {
+                "description": "Name for the Development Subscription Web Subnet's Route Table"
             }
         }
-        
     },
     "variables": {
-
+        "GatewayRouteName": "[toLower(concat(parameters('GatewayRouteTableName'),'_',replace(parameters('GatewaySubnetPrefix'),'/','_')))]",
+        "AppGatewayRouteName": "[toLower(concat(parameters('AppGatewayRouteTableName'),'_',replace(parameters('AppGatewaySubnetPrefix'),'/','_')))]",
+        "ManagementRouteName": "[toLower(concat(parameters('ManagementRouteTableName'),'_',replace(parameters('ManagementSubnetPrefix'),'/','_')))]",
+        "ADRouteName": "[toLower(concat(parameters('ADRouteTableName'),'_',replace(parameters('ADSubnetPrefix'),'/','_')))]",
+        "PrdApplicationRouteName": "[toLower(concat(parameters('PrdApplicationRouteTableName'),'_',replace(parameters('PrdApplicationSubnetPrefix'),'/','_')))]",
+        "PrdDataRouteName": "[toLower(concat(parameters('PrdDataRouteTableName'),'_',replace(parameters('PrdDataSubnetPrefix'),'/','_')))]",
+        "PrdWebRouteName": "[toLower(concat(parameters('PrdWebRouteTableName'),'_',replace(parameters('PrdWebSubnetPrefix'),'/','_')))]",
+        "DevApplicationRouteName": "[toLower(concat(parameters('DevApplicationRouteTableName'),'_',replace(parameters('DevApplicationSubnetPrefix'),'/','_')))]",
+        "DevDataRouteName": "[toLower(concat(parameters('DevDataRouteTableName'),'_',replace(parameters('DevDataSubnetPrefix'),'/','_')))]",
+        "DevWebRouteName": "[toLower(concat(parameters('DevWebRouteTableName'),'_',replace(parameters('DevWebSubnetPrefix'),'/','_')))]",
+        "VNetGatewayPIPName": "[concat(parameters('VNetGatewayName'),'_pip')]",
+        "GatewaySubnetRef": "[concat(resourceId('Microsoft.Network/virtualNetworks',parameters('ProdVNetName')),'/subnets/','GatewaySubnet')]"
     },
     "resources": [
         {
-            "name": "[parameters('VNetName')]",
+            "name": "[parameters('ProdVNetName')]",
             "type": "Microsoft.Network/virtualNetworks",
             "location": "[resourceGroup().location]",
             "apiVersion": "2015-06-15",
             "dependsOn": [],
             "tags": {
-                "displayName": "resourceGroup().name Virtual Network"
             },
             "properties": {
                 "addressSpace": {
                     "addressPrefixes": [
-                        "[parameters('VNetPrefix')]"
+                        "[parameters('ProdVNetPrefix')]"
                     ]
                 },
                 "subnets": [
                     {
                         "name": "GatewaySubnet",
                         "properties": {
-                            "addressPrefix": "[parameters('GatewaySubnetPrefix')]",
+                            "addressPrefix": "[parameters('GatewaySubnetPrefix')]"
                         }
                     },
                     {
                         "name": "[parameters('AppGatewaySubnetName')]",
                         "properties": {
-                            "addressPrefix": "[parameters('AppGatewaySubnetPrefix')]",
+                            "addressPrefix": "[parameters('AppGatewaySubnetPrefix')]"
                         }
                     },
                     {
                         "name": "[parameters('ManagementSubnetName')]",
                         "properties": {
-                            "addressPrefix": "[parameters('ManagementSubnetPrefix')]",
+                            "addressPrefix": "[parameters('ManagementSubnetPrefix')]"
                         }
                     },
                     {
                         "name": "[parameters('OutsideSubnetName')]",
                         "properties": {
-                            "addressPrefix": "[parameters('OutsideSubnetPrefix')]",
+                            "addressPrefix": "[parameters('OutsideSubnetPrefix')]"
                         }
                     },
                     {
                         "name": "[parameters('PrivateSubnetNameName')]",
                         "properties": {
-                            "addressPrefix": "[parameters('PrivateSubnetPrefix')]",
+                            "addressPrefix": "[parameters('PrivateSubnetPrefix')]"
                         }
                     },
                     {
                         "name": "[parameters('PublicSubnetName')]",
                         "properties": {
-                            "addressPrefix": "[parameters('PublicSubnetPrefix')]",
+                            "addressPrefix": "[parameters('PublicSubnetPrefix')]"
                         }
                     },
                     {
                         "name": "[parameters('ADSubnetName')]",
                         "properties": {
-                            "addressPrefix": "[parameters('ADSubnetPrefix')]",
+                            "addressPrefix": "[parameters('ADSubnetPrefix')]"
                         }
                     },
                     {
-                        "name": "[parameters('ApplicationSubnetName')]",
+                        "name": "[parameters('PrdApplicationSubnetName')]",
                         "properties": {
-                            "addressPrefix": "[parameters('ApplicationSubnetPrefix')]",
+                            "addressPrefix": "[parameters('PrdApplicationSubnetPrefix')]"
                         }
                     },
                     {
-                        "name": "[parameters('DataSubnetName')]",
+                        "name": "[parameters('PrdDataSubnetName')]",
                         "properties": {
-                            "addressPrefix": "[parameters('DataSubnetPrefix')]",
+                            "addressPrefix": "[parameters('PrdDataSubnetPrefix')]"
                         }
                     },
                     {
-                        "name": "[parameters('WebSubnetName')]",
+                        "name": "[parameters('PrdWebSubnetName')]",
                         "properties": {
-                            "addressPrefix": "[parameters('WebSubnetPrefix')]",
-                            "networkSecurityGroup": {
-                                "id": "[resourceID('Microsoft.Network/networkSecurityGroups/',parameters('WebSubnetNSGName'))]"
-                            }
+                            "addressPrefix": "[parameters('PrdWebSubnetPrefix')]"
                         }
                     }
                 ]
+            }
+        },
+        {
+            "apiVersion": "2017-10-01",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[variables('VNetGatewayPIPName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+              "publicIPAllocationMethod": "Dynamic"
+            }
+        },
+        {
+            "apiVersion": "2017-10-01",
+            "type": "Microsoft.Network/virtualNetworkGateways",
+            "name": "[parameters('VNetGatewayName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+              "[concat('Microsoft.Network/publicIPAddresses/', variables('VNetGatewayPIPName'))]",
+              "[concat('Microsoft.Network/virtualNetworks/', parameters('ProdVNetName'))]"
+            ],
+            "properties": {
+              "ipConfigurations": [
+                {
+                  "properties": {
+                    "privateIPAllocationMethod": "Dynamic",
+                    "subnet": {
+                      "id": "[variables('GatewaySubnetRef')]"
+                    },
+                    "publicIPAddress": {
+                      "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('VNetGatewayPIPName'))]"
+                    }
+                  },
+                  "name": "[concat(parameters('VNetGatewayName'),'ipconfig')]"
+                }
+              ],
+              "gatewayType": "Vpn",
+              "vpnType": "RouteBased",
+              "enableBgp": "false"
+            }
+        },
+        {
+            "type": "Microsoft.Network/localNetworkGateways",
+            "name": "[parameters('LocalNetworkGatewayName')]",
+            "apiVersion": "2017-10-01",
+            "location": "[resourceGroup().location]",
+            "scale": null,
+            "properties": {
+                "gatewayIpAddress": "[parameters('LocalNetworkGatewayIP')]"
+            },
+            "dependsOn": []
+        },
+        {
+            "type": "Microsoft.Network/routeTables",
+            "name": "[parameters('GatewayRouteTableName')]",
+            "apiVersion": "2018-01-01",
+            "location": "[resourceGroup().location]",
+            "scale": null,
+            "properties": {
+                "provisioningState": "Succeeded",
+                "disableBgpRoutePropagation": false,
+                "routes": [
+                    {
+                        "name": "Default",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "1.1.1.1"
+                        }
+                    },
+                    {
+                        "name": "[variables('GatewayRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('GatewaySubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "1.1.1.1"
+                        }
+                    },
+                    {
+                        "name": "[variables('AppGatewayRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('AppGatewaySubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "1.1.1.1"
+                        }
+                    },
+                    {
+                        "name": "[variables('ManagementRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('ManagementSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "1.1.1.1"
+                        }
+                    },
+                    {
+                        "name": "[variables('ADRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('ADSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "1.1.1.1"
+                        }
+                    },
+                    {
+                        "name": "[variables('PrdApplicationRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('PrdApplicationSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "1.1.1.1"
+                        }
+                    },
+                    {
+                        "name": "[variables('PrdDataRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('PrdDataSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "1.1.1.1"
+                        }
+                    },
+                    {
+                        "name": "[variables('PrdWebRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('PrdWebSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "1.1.1.1"
+                        }
+                    },
+                    {
+                        "name": "[variables('DevApplicationRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('DevApplicationSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "1.1.1.1"
+                        }
+                    },
+                    {
+                        "name": "[variables('DevDataRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('DevDataSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "1.1.1.1"
+                        }
+                    },
+                    {
+                        "name": "[variables('DevWebRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('DevWebSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "1.1.1.1"
+                        }
+                    },
+                    {
+                        "name": "AzureEventHub",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "52.244.48.85/32",
+                            "nextHopType": "Internet"
+                        }
+                    },
+                    {
+                        "name": "AzureCloud",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "23.97.0.0/20",
+                            "nextHopType": "Internet"
+                        }
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "type": "Microsoft.Network/routeTables",
+            "name": "[parameters('AppGatewayRouteTableName')]",
+            "apiVersion": "2018-01-01",
+            "location": "[resourceGroup().location]",
+            "scale": null,
+            "properties": {
+                "provisioningState": "Succeeded",
+                "disableBgpRoutePropagation": false,
+                "routes": [
+                    {
+                        "name": "Default",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "2.2.2.2"
+                        }
+                    },
+                    {
+                        "name": "[variables('GatewayRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('GatewaySubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "2.2.2.2"
+                        }
+                    },
+                    {
+                        "name": "[variables('AppGatewayRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('AppGatewaySubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "2.2.2.2"
+                        }
+                    },
+                    {
+                        "name": "[variables('ManagementRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('ManagementSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "2.2.2.2"
+                        }
+                    },
+                    {
+                        "name": "[variables('ADRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('ADSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "2.2.2.2"
+                        }
+                    },
+                    {
+                        "name": "[variables('PrdApplicationRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('PrdApplicationSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "2.2.2.2"
+                        }
+                    },
+                    {
+                        "name": "[variables('PrdDataRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('PrdDataSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "2.2.2.2"
+                        }
+                    },
+                    {
+                        "name": "[variables('PrdWebRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('PrdWebSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "2.2.2.2"
+                        }
+                    },
+                    {
+                        "name": "[variables('DevApplicationRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('DevApplicationSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "2.2.2.2"
+                        }
+                    },
+                    {
+                        "name": "[variables('DevDataRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('DevDataSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "2.2.2.2"
+                        }
+                    },
+                    {
+                        "name": "[variables('DevWebRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('DevWebSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "2.2.2.2"
+                        }
+                    },
+                    {
+                        "name": "AzureEventHub",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "52.244.48.85/32",
+                            "nextHopType": "Internet"
+                        }
+                    },
+                    {
+                        "name": "AzureCloud",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "23.97.0.0/20",
+                            "nextHopType": "Internet"
+                        }
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "type": "Microsoft.Network/routeTables",
+            "name": "[parameters('ManagementRouteTableName')]",
+            "apiVersion": "2018-01-01",
+            "location": "[resourceGroup().location]",
+            "scale": null,
+            "properties": {
+                "provisioningState": "Succeeded",
+                "disableBgpRoutePropagation": false,
+                "routes": [
+                    {
+                        "name": "Default",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "1.1.1.1"
+                        }
+                    },
+                    {
+                        "name": "[variables('GatewayRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('GatewaySubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "1.1.1.1"
+                        }
+                    },
+                    {
+                        "name": "[variables('AppGatewayRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('AppGatewaySubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "1.1.1.1"
+                        }
+                    },
+                    {
+                        "name": "[variables('ManagementRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('ManagementSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "1.1.1.1"
+                        }
+                    },
+                    {
+                        "name": "[variables('ADRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('ADSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "1.1.1.1"
+                        }
+                    },
+                    {
+                        "name": "[variables('PrdApplicationRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('PrdApplicationSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "1.1.1.1"
+                        }
+                    },
+                    {
+                        "name": "[variables('PrdDataRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('PrdDataSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "1.1.1.1"
+                        }
+                    },
+                    {
+                        "name": "[variables('PrdWebRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('PrdWebSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "1.1.1.1"
+                        }
+                    },
+                    {
+                        "name": "[variables('DevApplicationRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('DevApplicationSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "1.1.1.1"
+                        }
+                    },
+                    {
+                        "name": "[variables('DevDataRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('DevDataSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "1.1.1.1"
+                        }
+                    },
+                    {
+                        "name": "[variables('DevWebRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('DevWebSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "1.1.1.1"
+                        }
+                    },
+                    {
+                        "name": "AzureEventHub",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "52.244.48.85/32",
+                            "nextHopType": "Internet"
+                        }
+                    },
+                    {
+                        "name": "AzureCloud",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "23.97.0.0/20",
+                            "nextHopType": "Internet"
+                        }
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "type": "Microsoft.Network/routeTables",
+            "name": "[parameters('ADRouteTableName')]",
+            "apiVersion": "2018-01-01",
+            "location": "[resourceGroup().location]",
+            "scale": null,
+            "properties": {
+                "provisioningState": "Succeeded",
+                "disableBgpRoutePropagation": false,
+                "routes": [
+                    {
+                        "name": "Default",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('GatewayRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('GatewaySubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('AppGatewayRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('AppGatewaySubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('ManagementRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('ManagementSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('ADRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('ADSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('PrdApplicationRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('PrdApplicationSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('PrdDataRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('PrdDataSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('PrdWebRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('PrdWebSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('DevApplicationRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('DevApplicationSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('DevDataRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('DevDataSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('DevWebRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('DevWebSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "AzureEventHub",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "52.244.48.85/32",
+                            "nextHopType": "Internet"
+                        }
+                    },
+                    {
+                        "name": "AzureCloud",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "23.97.0.0/20",
+                            "nextHopType": "Internet"
+                        }
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "type": "Microsoft.Network/routeTables",
+            "name": "[parameters('PrdApplicationRouteTableName')]",
+            "apiVersion": "2018-01-01",
+            "location": "[resourceGroup().location]",
+            "scale": null,
+            "properties": {
+                "provisioningState": "Succeeded",
+                "disableBgpRoutePropagation": false,
+                "routes": [
+                    {
+                        "name": "Default",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('GatewayRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('GatewaySubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('AppGatewayRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('AppGatewaySubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('ManagementRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('ManagementSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('ADRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('ADSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('PrdApplicationRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('PrdApplicationSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('PrdDataRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('PrdDataSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('PrdWebRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('PrdWebSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('DevApplicationRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('DevApplicationSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('DevDataRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('DevDataSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('DevWebRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('DevWebSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "AzureEventHub",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "52.244.48.85/32",
+                            "nextHopType": "Internet"
+                        }
+                    },
+                    {
+                        "name": "AzureCloud",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "23.97.0.0/20",
+                            "nextHopType": "Internet"
+                        }
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "type": "Microsoft.Network/routeTables",
+            "name": "[parameters('PrdDataRouteTableName')]",
+            "apiVersion": "2018-01-01",
+            "location": "[resourceGroup().location]",
+            "scale": null,
+            "properties": {
+                "provisioningState": "Succeeded",
+                "disableBgpRoutePropagation": false,
+                "routes": [
+                    {
+                        "name": "Default",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('GatewayRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('GatewaySubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('AppGatewayRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('AppGatewaySubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('ManagementRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('ManagementSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('ADRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('ADSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('PrdApplicationRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('PrdApplicationSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('PrdDataRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('PrdDataSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('PrdWebRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('PrdWebSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('DevApplicationRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('DevApplicationSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('DevDataRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('DevDataSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('DevWebRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('DevWebSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "AzureEventHub",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "52.244.48.85/32",
+                            "nextHopType": "Internet"
+                        }
+                    },
+                    {
+                        "name": "AzureCloud",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "23.97.0.0/20",
+                            "nextHopType": "Internet"
+                        }
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "type": "Microsoft.Network/routeTables",
+            "name": "[parameters('PrdWebRouteTableName')]",
+            "apiVersion": "2018-01-01",
+            "location": "[resourceGroup().location]",
+            "scale": null,
+            "properties": {
+                "provisioningState": "Succeeded",
+                "disableBgpRoutePropagation": false,
+                "routes": [
+                    {
+                        "name": "Default",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('GatewayRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('GatewaySubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('AppGatewayRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('AppGatewaySubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('ManagementRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('ManagementSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('ADRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('ADSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('PrdApplicationRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('PrdApplicationSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('PrdDataRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('PrdDataSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('PrdWebRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('PrdWebSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('DevApplicationRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('DevApplicationSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('DevDataRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('DevDataSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "[variables('DevWebRouteName')]",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "[parameters('DevWebSubnetPrefix')]",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "3.3.3.3"
+                        }
+                    },
+                    {
+                        "name": "AzureEventHub",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "52.244.48.85/32",
+                            "nextHopType": "Internet"
+                        }
+                    },
+                    {
+                        "name": "AzureCloud",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "23.97.0.0/20",
+                            "nextHopType": "Internet"
+                        }
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "condition": "[equals(parameters('deploydev'),'Yes')]",
+            "apiVersion": "2017-05-10",
+            "name": "NestedTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "subscriptionId": "[parameters('DevSubscriptionId')]",
+            "resourceGroup": "[parameters('DevResourceGroup')]",
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "variables": {},
+                    "resources": [
+                        {
+                            "name": "[parameters('DevVNetName')]",
+                            "type": "Microsoft.Network/virtualNetworks",
+                            "location": "[resourceGroup().location]",
+                            "apiVersion": "2015-06-15",
+                            "dependsOn": [],
+                            "tags": {
+                            },
+                            "properties": {
+                                "addressSpace": {
+                                    "addressPrefixes": [
+                                        "[parameters('DevVNetPrefix')]"
+                                    ]
+                                },
+                                "subnets": [
+                                    {
+                                        "name": "[parameters('DevApplicationSubnetName')]",
+                                        "properties": {
+                                            "addressPrefix": "[parameters('DevApplicationSubnetPrefix')]"
+                                        }
+                                    },
+                                    {
+                                        "name": "[parameters('DevDataSubnetName')]",
+                                        "properties": {
+                                            "addressPrefix": "[parameters('DevDataSubnetPrefix')]"
+                                        }
+                                    },
+                                    {
+                                        "name": "[parameters('DevWebSubnetName')]",
+                                        "properties": {
+                                            "addressPrefix": "[parameters('DevWebSubnetPrefix')]"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "type": "Microsoft.Network/routeTables",
+                            "name": "[parameters('DevApplicationRouteTableName')]",
+                            "apiVersion": "2018-01-01",
+                            "location": "[resourceGroup().location]",
+                            "scale": null,
+                            "properties": {
+                                "provisioningState": "Succeeded",
+                                "disableBgpRoutePropagation": false,
+                                "routes": [
+                                    {
+                                        "name": "Default",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "0.0.0.0/0",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('GatewayRouteName')]",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "[parameters('GatewaySubnetPrefix')]",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('AppGatewayRouteName')]",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "[parameters('AppGatewaySubnetPrefix')]",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('ManagementRouteName')]",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "[parameters('ManagementSubnetPrefix')]",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('ADRouteName')]",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "[parameters('ADSubnetPrefix')]",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('PrdApplicationRouteName')]",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "[parameters('PrdApplicationSubnetPrefix')]",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('PrdDataRouteName')]",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "[parameters('PrdDataSubnetPrefix')]",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('PrdWebRouteName')]",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "[parameters('PrdWebSubnetPrefix')]",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('DevApplicationRouteName')]",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "[parameters('DevApplicationSubnetPrefix')]",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('DevDataRouteName')]",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "[parameters('DevDataSubnetPrefix')]",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('DevWebRouteName')]",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "[parameters('DevWebSubnetPrefix')]",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "AzureEventHub",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "52.244.48.85/32",
+                                            "nextHopType": "Internet"
+                                        }
+                                    },
+                                    {
+                                        "name": "AzureCloud",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "23.97.0.0/20",
+                                            "nextHopType": "Internet"
+                                        }
+                                    }
+                                ]
+                            },
+                            "dependsOn": []
+                        },
+                        {
+                            "type": "Microsoft.Network/routeTables",
+                            "name": "[parameters('DevDataRouteTableName')]",
+                            "apiVersion": "2018-01-01",
+                            "location": "[resourceGroup().location]",
+                            "scale": null,
+                            "properties": {
+                                "provisioningState": "Succeeded",
+                                "disableBgpRoutePropagation": false,
+                                "routes": [
+                                    {
+                                        "name": "Default",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "0.0.0.0/0",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('GatewayRouteName')]",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "[parameters('GatewaySubnetPrefix')]",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('AppGatewayRouteName')]",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "[parameters('AppGatewaySubnetPrefix')]",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('ManagementRouteName')]",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "[parameters('ManagementSubnetPrefix')]",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('ADRouteName')]",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "[parameters('ADSubnetPrefix')]",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('PrdApplicationRouteName')]",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "[parameters('PrdApplicationSubnetPrefix')]",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('PrdDataRouteName')]",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "[parameters('PrdDataSubnetPrefix')]",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('PrdWebRouteName')]",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "[parameters('PrdWebSubnetPrefix')]",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('DevApplicationRouteName')]",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "[parameters('DevApplicationSubnetPrefix')]",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('DevDataRouteName')]",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "[parameters('DevDataSubnetPrefix')]",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('DevWebRouteName')]",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "[parameters('DevWebSubnetPrefix')]",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "AzureEventHub",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "52.244.48.85/32",
+                                            "nextHopType": "Internet"
+                                        }
+                                    },
+                                    {
+                                        "name": "AzureCloud",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "23.97.0.0/20",
+                                            "nextHopType": "Internet"
+                                        }
+                                    }
+                                ]
+                            },
+                            "dependsOn": []
+                        },
+                        {
+                            "type": "Microsoft.Network/routeTables",
+                            "name": "[parameters('DevWebRouteTableName')]",
+                            "apiVersion": "2018-01-01",
+                            "location": "[resourceGroup().location]",
+                            "scale": null,
+                            "properties": {
+                                "provisioningState": "Succeeded",
+                                "disableBgpRoutePropagation": false,
+                                "routes": [
+                                    {
+                                        "name": "Default",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "0.0.0.0/0",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('GatewayRouteName')]",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "[parameters('GatewaySubnetPrefix')]",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('AppGatewayRouteName')]",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "[parameters('AppGatewaySubnetPrefix')]",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('ManagementRouteName')]",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "[parameters('ManagementSubnetPrefix')]",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('ADRouteName')]",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "[parameters('ADSubnetPrefix')]",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('PrdApplicationRouteName')]",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "[parameters('PrdApplicationSubnetPrefix')]",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('PrdDataRouteName')]",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "[parameters('PrdDataSubnetPrefix')]",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('PrdWebRouteName')]",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "[parameters('PrdWebSubnetPrefix')]",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('DevApplicationRouteName')]",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "[parameters('DevApplicationSubnetPrefix')]",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('DevDataRouteName')]",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "[parameters('DevDataSubnetPrefix')]",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "[variables('DevWebRouteName')]",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "[parameters('DevWebSubnetPrefix')]",
+                                            "nextHopType": "VirtualAppliance",
+                                            "nextHopIpAddress": "3.3.3.3"
+                                        }
+                                    },
+                                    {
+                                        "name": "AzureEventHub",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "52.244.48.85/32",
+                                            "nextHopType": "Internet"
+                                        }
+                                    },
+                                    {
+                                        "name": "AzureCloud",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "addressPrefix": "23.97.0.0/20",
+                                            "nextHopType": "Internet"
+                                        }
+                                    }
+                                ]
+                            },
+                            "dependsOn": []
+                        }
+                    ] 
+                }
             }
         }
     ]
