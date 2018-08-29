@@ -334,7 +334,10 @@
         "DevDataRouteName": "[toLower(concat(parameters('DevDataRouteTableName'),'_',replace(parameters('DevDataSubnetPrefix'),'/','_')))]",
         "DevWebRouteName": "[toLower(concat(parameters('DevWebRouteTableName'),'_',replace(parameters('DevWebSubnetPrefix'),'/','_')))]",
         "VNetGatewayPIPName": "[concat(parameters('VNetGatewayName'),'_pip')]",
-        "GatewaySubnetRef": "[concat(resourceId('Microsoft.Network/virtualNetworks',parameters('ProdVNetName')),'/subnets/','GatewaySubnet')]"
+        "GatewaySubnetRef": "[concat(resourceId('Microsoft.Network/virtualNetworks',parameters('ProdVNetName')),'/subnets/','GatewaySubnet')]",
+        "ProdSubID": "[subscription().subscriptionId]",
+        "ProdRGName": "[resourceGroup().name]",
+        "ProdVNetID": "[resourceId(variables('ProdSubID'),variables('ProdRGName'),'Microsoft.Network/virtualNetworks',parameters('ProdVNetName'))]"
     },
     "resources": [
         {
@@ -414,6 +417,30 @@
                     }
                 ]
             }
+        },
+        {
+            "name": "[concat(parameters('ProdVNetName'),'/',parameters('ProdVNetName'),'_to_',parameters('DevVNetName'),'_peering')]",
+            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+            "apiVersion": "2017-10-01",
+            "properties": {
+              "allowVirtualNetworkAccess": "true",
+              "allowForwardedTraffic": "true",
+              "allowGatewayTransit": "true",
+              "useRemoteGateways": "false",
+              "remoteVirtualNetwork": {
+                "id": "[resourceId(parameters('DevSubscriptionId'),parameters('DevResourceGroup'),'Microsoft.Network/virtualNetworks',parameters('DevVNetName'))]"
+              },
+              "remoteAddressSpace": {
+                "addressPrefixes": [
+                  "[parameters('DevVNetPrefix')]"
+                ]
+              }
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', 'NestedTemplate')]",
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('ProdVNetName'))]",
+                "[concat('Microsoft.Network/virtualNetworkGateways/', parameters('VNetGatewayName'))]"
+            ]
         },
         {
             "apiVersion": "2017-10-01",
@@ -1808,6 +1835,49 @@
                     ] 
                 }
             }
+        },
+        {
+            "condition": "[equals(parameters('deploydev'),'Yes')]",
+            "apiVersion": "2018-01-01",
+            "name": "NestedTemplatePeer",
+            "type": "Microsoft.Resources/deployments",
+            "subscriptionId": "[parameters('DevSubscriptionId')]",
+            "resourceGroup": "[parameters('DevResourceGroup')]",
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "variables": {},
+                    "resources": [
+                        {
+                            "name": "[concat(parameters('DevVNetName'),'/',parameters('DevVNetName'),'_to_',parameters('ProdVNetName'),'_peering')]",
+                            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+                            "apiVersion": "2017-10-01",
+                            "properties": {
+                              "allowVirtualNetworkAccess": "true",
+                              "allowForwardedTraffic": "true",
+                              "allowGatewayTransit": "false",
+                              "useRemoteGateways": "true",
+                              "remoteVirtualNetwork": {
+                                "id": "[variables('ProdVNetID')]"
+                              },
+                              "remoteAddressSpace": {
+                                "addressPrefixes": [
+                                  "[parameters('ProdVNetPrefix')]"
+                                ]
+                              }
+                            }
+                        }
+                    ] 
+                }
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', 'NestedTemplate')]",
+                "[concat('Microsoft.Network/virtualNetworks/', parameters('ProdVNetName'))]",
+                "[concat('Microsoft.Network/virtualNetworkGateways/', parameters('VNetGatewayName'))]"
+            ]
         }
     ]
 }
